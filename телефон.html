@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин товаров - Мобильная версия</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.5;
+            background-color: #f8f9fa;
+            padding-bottom: 2rem;
+        }
+
+        /* Навигационное меню для телефона */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            list-style: none;
+            padding: 5rem 2rem 2rem 2rem;
+            transition: right 0.3s ease;
+            z-index: 999;
+        }
+
+        .nav-menu.active {
+            right: 0;
+        }
+
+        .nav-menu li {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 0.8rem;
+            display: block;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* Гамбургер меню */
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Оверлей для меню */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 998;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Swiper Slider для мобильных */
+        .swiper-section {
+            margin: 1rem;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .swiper-container {
+            border-radius: 15px;
+        }
+
+        .swiper-slide {
+            position: relative;
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 1rem;
+            z-index: 2;
+        }
+
+        .slide-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+
+        .slide-description {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .swiper-pagination-bullet {
+            background: white;
+            opacity: 0.6;
+            width: 8px;
+            height: 8px;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #667eea;
+            opacity: 1;
+        }
+
+        /* Основной контент для телефона */
+        .container {
+            padding: 1rem;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 1.8rem;
+            color: #333;
+            margin: 1.5rem 0;
+            font-weight: 600;
+        }
+
+        .products-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        /* Карточка товара для телефона */
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease;
+            border: 1px solid #eee;
+        }
+
+        .product-card:active {
+            transform: scale(0.98);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            line-height: 1.3;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+        }
+
+        .product-description {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .product-features {
+            margin: 0.8rem 0;
+            padding-left: 1.2rem;
+        }
+
+        .product-features li {
+            margin-bottom: 0.4rem;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .product-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-top: auto;
+        }
+
+        .product-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Нижнее меню для быстрой навигации */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.8rem;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 90;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        /* Адаптивность для очень маленьких экранов */
+        @media (max-width: 360px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .product-card {
+                padding: 1rem;
+            }
+            
+            .product-image {
+                height: 150px;
+            }
+            
+            .product-title {
+                font-size: 1.1rem;
+            }
+            
+            .product-price {
+                font-size: 1.3rem;
+            }
+            
+            .product-button {
+                padding: 0.9rem;
+                font-size: 0.95rem;
+            }
+
+            .swiper-slide {
+                height: 180px;
+            }
+
+            .slide-content {
+                padding: 0.8rem;
+            }
+
+            .slide-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Портретный режим */
+        @media (max-width: 480px) and (orientation: portrait) {
+            .nav-menu {
+                width: 85%;
+            }
+            
+            .product-card {
+                margin: 0 0.5rem;
+            }
+        }
+
+        /* Ландшафтный режим телефона */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .nav-menu {
+                width: 60%;
+            }
+            
+            .products-grid {
+                gap: 1rem;
+            }
+            
+            .product-card {
+                padding: 1rem;
+            }
+            
+            .product-image {
+                height: 120px;
+            }
+
+            .swiper-slide {
+                height: 150px;
+            }
+        }
+
+        /* Плавная прокрутка */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Улучшение touch-интерфейса */
+        button, a {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационное меню -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">TechStore</a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Мобильное меню -->
+    <ul class="nav-menu" id="navMenu">
+        <li><a href="#">Главная</a></li>
+        <li><a href="#">Каталог</a></li>
+        <li><a href="#">Акции</a></li>
+        <li><a href="#">Корзина</a></li>
+        <li><a href="#">Профиль</a></li>
+    </ul>
+
+    <!-- Оверлей для меню -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Swiper Slider -->
+    <section class="swiper-section">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="https://via.placeholder.com/600x200/667eea/ffffff?text=Скидки+до+40%" alt="Акция">
+                    <div class="slide-content">
+                        <h3 class="slide-title">Специальные предложения</h3>
+                        <p class="slide-description">Только сегодня скидки на всю технику</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <img src="https://via.placeholder.com/600x200/764ba2/ffffff?text=Новые+Поступления" alt="Новые поступления">
+                    <div class="slide-content">
+                        <h3 class="slide-title">Новые поступления</h3>
+                        <p class="slide-description">Самые современные гаджеты уже здесь</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <img src="https://via.placeholder.com/600x200/ff6b6b/ffffff?text=Бесплатная+Доставка" alt="Бесплатная доставка">
+                    <div class="slide-content">
+                        <h3 class="slide-title">Бесплатная доставка</h3>
+                        <p class="slide-description">При заказе от 5000 рублей</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Добавляем пагинацию -->
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+
+    <!-- Основной контент -->
+    <div class="container">
+        <h1 class="page-title">Популярные товары</h1>
+        
+        <div class="products-grid">
+            <!-- Карточка товара 1 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/400x250/667eea/ffffff?text=Смартфон+Pro" alt="Смартфон" class="product-image">
+                <h3 class="product-title">Смартфон Premium Max</h3>
+                <div class="product-price">29 990 ₽</div>
+                <p class="product-description">Флагманский смартфон с AMOLED-дисплеем и тройной камерой 108 Мп.</p>
+                <ul class="product-features">
+                    <li>8 ГБ RAM / 256 ГБ ROM</li>
+                    <li>Батарея 5000 mAh</li>
+                    <li>Защита IP68</li>
+                </ul>
+                <button class="product-button">В корзину</button>
+            </div>
+
+            <!-- Карточка товара 2 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/400x250/764ba2/ffffff?text=Ноутбук+Ultra" alt="Ноутбук" class="product-image">
+                <h3 class="product-title">Ноутбук Gaming Pro</h3>
+                <div class="product-price">79 990 ₽</div>
+                <p class="product-description">Игровой ноутбук с RTX 4060 и процессором Intel Core i7.</p>
+                <ul class="product-features">
+                    <li>16 ГБ DDR5 RAM</li>
+                    <li>1 ТБ SSD NVMe</li>
+                    <li>144Hz дисплей</li>
+                </ul>
+                <button class="product-button">В корзину</button>
+            </div>
+
+            <!-- Карточка товара 3 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/400x250/ff6b6b/ffffff?text=Наушники+Pro" alt="Наушники" class="product-image">
+                <h3 class="product-title">Наушники Wireless Max</h3>
+                <div class="product-price">14 990 ₽</div>
+                <p class="product-description">Беспроводные наушники с шумоподавлением и временем работы 40 часов.</p>
+                <ul class="product-features">
+                    <li>Bluetooth 5.3</li>
+                    <li>Быстрая зарядка</li>
+                    <li>Водозащита IPX5</li>
+                </ul>
+                <button class="product-button">В корзину</button>
+            </div>
+
+            <!-- Карточка товара 4 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/400x250/feca57/ffffff?text=Планшет+Air" alt="Планшет" class="product-image">
+                <h3 class="product-title">Планшет Ultra Thin</h3>
+                <div class="product-price">39 990 ₽</div>
+                <p class="product-description">Ультратонкий планшет с 11-дюймовым OLED-экраном и стилусом.</p>
+                <ul class="product-features">
+                    <li>8 ГБ RAM / 128 ГБ ROM</li>
+                    <li>Стилус в комплекте</li>
+                    <li>4 динамика</li>
+                </ul>
+                <button class="product-button">В корзину</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нижнее меню -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span>Главная</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">📦</span>
+            <span>Каталог</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">🎁</span>
+            <span>Акции</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">🛒</span>
+            <span>Корзина</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>Профиль</span>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        // Инициализация Swiper для мобильных
+        const swiper = new Swiper('.swiper-container', {
+            loop: true,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            effect: 'slide',
+            speed: 600,
+        });
+
+        // Мобильное меню
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        function toggleMenu() {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        hamburger.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', toggleMenu);
+
+        // Закрытие меню при клике на ссылку
+        const navLinks = document.querySelectorAll('.nav-menu a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+
+        // Обработка нажатий на кнопки "В корзину"
+        const addToCartButtons = document.querySelectorAll('.product-button');
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const originalText = this.textContent;
+                const originalBackground = this.style.background;
+                
+                this.textContent = 'Добавлено ✓';
+                this.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.background = originalBackground;
+                    this.disabled = false;
+                }, 1500);
+            });
+        });
+
+        // Плавный скролл для якорей
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
